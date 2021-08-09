@@ -1,5 +1,6 @@
 
 # Ansible Guide
+![img.png](img.png)
 ## Ansible controller and agent nodes set up guide
 - The following will set up three VMs
 - Run `vagrant up` to start all three
