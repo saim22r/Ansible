@@ -4,7 +4,7 @@
 - `(double check syntax/intendation)`
 
 ## We will use 18.04 ubuntu for ansible controller and agent nodes set up 
-### Please ensure to refer back to your vagrant documentation
+## The following sets up 3 VMs
 
 ```vagrant 
 # -*- mode: ruby -*-
