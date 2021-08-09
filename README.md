@@ -6,8 +6,6 @@
 ## We will use 18.04 ubuntu for ansible controller and agent nodes set up 
 ### Please ensure to refer back to your vagrant documentation
 
-- **You may need to reinstall plugins or dependencies required depending on the OS you are using.**
-
 ```vagrant 
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
@@ -63,4 +61,65 @@ Vagrant.configure("2") do |config|
   end
 
 end
+```
+## Installing nginx using ansible and YAML
+- Navigate to `cd /etc/ansible` 
+- Create a playbook in this directory `sudo nano PLAYBOOK_NAME.yml`
+- Write the code in the file, keeping an eye on indentation 
+- Run the playbook `ansible-playbook PLAYBOOK_NAME.yml`
+  
+- This is a playbook to install and set up Nginx in our web server (192.168.33.10)
+- This playbook is written in YAML and YAML starts with three ---
+```
+---
+# name of the host - hosts is to define the name of your host or all
+- hosts: web
+
+# find the facts about the hosts
+  gather_facts: yes
+
+# we need admin access
+  become: true
+
+# instructions using tasks module in ansible
+  tasks:
+  - name: Install Nginx
+
+# install nginx
+    apt: pkg=nginx state=present update_cache=yes
+
+# ensure its running/active
+# update cache
+# restart nginx if reverse proxy is implemented or if needed
+    notify:
+     - restart nginx
+  - name: Allow all access to tcp port 80
+    ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+
+  handlers:
+    - name: Restart Nginx
+      service:
+```
+## Installing nodejs using ansible and YAML
+- Playbook name `sudo nano node_playbook.yml`
+```
+---
+- hosts: web
+  gather_facts: yes
+  become: true
+
+  tasks:
+    - name: "Add nodejs apt key"
+      apt_key:
+        url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+        state: present
+
+    - name: "Install nodejs"
+      apt:
+        update_cache: yes
+        name: nodejs
+        state: present
 ```
