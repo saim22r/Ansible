@@ -5,68 +5,74 @@
 - The following will set up three VMs
 - Run `vagrant up` to start all three
 
-```vagrant 
+```
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 
 # MULTI SERVER/VMs environment 
-#
 Vagrant.configure("2") do |config|
 
 # creating first VM called web  
   config.vm.define "web" do |web|
-    
     web.vm.box = "bento/ubuntu-18.04"
    # downloading ubuntu 18.04 image
-
     web.vm.hostname = 'web'
     # assigning host name to the VM
-    
     web.vm.network :private_network, ip: "192.168.33.10"
     #   assigning private IP
-    
     config.hostsupdater.aliases = ["development.web"]
     # creating a link called development.web so we can access web page with this link instread of an IP   
-        
   end
   
 # creating second VM called db
   config.vm.define "db" do |db|
-    
     db.vm.box = "bento/ubuntu-18.04"
-    
     db.vm.hostname = 'db'
-    
     db.vm.network :private_network, ip: "192.168.33.11"
-    
     config.hostsupdater.aliases = ["development.db"]     
   end
 
- # creating are Ansible controller
+# creating are Ansible controller
   config.vm.define "controller" do |controller|
-    
     controller.vm.box = "bento/ubuntu-18.04"
-    
     controller.vm.hostname = 'controller'
-    
     controller.vm.network :private_network, ip: "192.168.33.12"
-    
     config.hostsupdater.aliases = ["development.controller"] 
-    
   end
-
 end
 ```
+## Initial set-up
+- SSH into controller VM
+- Install dependencies 
+````
+sudo apt-get update
+	
+sudo apt-get install software-properties-common
+	
+sudo apt-add-repository ppa:ansible/ansible
+	
+sudo apt-get update
+	
+sudo apt-get install ansible
+
+sudo apt-get install tree
+````
+- Navigate to `cd /etc/ansible/hosts` to add web and db IP
+````
+[web]
+192.168.33.10 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
+[db]
+192.168.33.11 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
+````
+- Check connection `ansible all -m ping`. To check one host replace all with the host name.
 ## Installing nginx using ansible and YAML
 - Navigate to `cd /etc/ansible` 
 - Create a playbook in this directory `sudo nano PLAYBOOK_NAME.yml`
 - Write the code in the file, keeping an eye on indentation 
 - Run the playbook `ansible-playbook PLAYBOOK_NAME.yml`
-  
 - This is a playbook to install and set up Nginx in our web server (192.168.33.10)
 - This playbook is written in YAML and YAML starts with three ---
 ```
