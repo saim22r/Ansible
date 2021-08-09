@@ -1,10 +1,8 @@
 
-# Ansible controller and agent nodes set up guide
-- Clone this repo and run `vagrant up`
-- `(double check syntax/intendation)`
-
-## We will use 18.04 ubuntu for ansible controller and agent nodes set up 
-## The following sets up 3 VMs
+# Ansible Guide
+## Ansible controller and agent nodes set up guide
+- The following will set up three VMs
+- Run `vagrant up` to start all three
 
 ```vagrant 
 # -*- mode: ruby -*-
