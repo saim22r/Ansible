@@ -55,7 +55,7 @@ sudo apt-get install tree
 192.168.33.11 ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
 ````
 - Check connection `ansible all -m ping`. To check one host replace all with the host name.
-## Installing nginx using ansible and YAML
+## Installing nginx and nodejs using ansible and YAML
 - Navigate to `cd /etc/ansible` 
 - Create a playbook in this directory `sudo nano PLAYBOOK_NAME.yml`
 - Write the code in the file, keeping an eye on indentation 
@@ -64,54 +64,96 @@ sudo apt-get install tree
 - This playbook is written in YAML and YAML starts with three ---
 ```
 ---
-# name of the host - hosts is to define the name of your host or all
+# name of the hosts - hosts is to define the name of your host of all
 - hosts: web
 
-# find the facts about the hosts
+# find the facts about the host
   gather_facts: yes
 
-# we need admin access
+# admin access
   become: true
 
-# instructions using tasks module in ansible
+# instructions using task module in ansible
   tasks:
   - name: Install Nginx
 
 # install nginx
     apt: pkg=nginx state=present update_cache=yes
 
-# ensure its running/active
-# update cache
-# restart nginx if reverse proxy is implemented or if needed
-    notify:
-     - restart nginx
-  - name: Allow all access to tcp port 80
-    ufw:
-        rule: allow
-        port: '80'
-        proto: tcp
-
-  handlers:
-    - name: Restart Nginx
-      service:
-```
-## Installing nodejs using ansible and YAML
-- Playbook name `sudo nano node_playbook.yml`
-```
----
-- hosts: web
-  gather_facts: yes
+-
+  name: "installing nodejs"
+  hosts: web
   become: true
-
   tasks:
-    - name: "Add nodejs apt key"
+    - name: "add nodejs"
       apt_key:
         url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
         state: present
-
-    - name: "Install nodejs"
+    - name: add repo
+      apt_repository:
+        repo: deb https://deb.nodesource.com/node_13.x bionic main
+        update_cache: yes
+    - name: "installing nodejs"
       apt:
         update_cache: yes
         name: nodejs
         state: present
+# Set up the reverse proxy the same way we have done previously
+-
+  name: "reverse proxy"
+  hosts: web
+  become: true
+  tasks:
+    - name: "delete current default"
+      file:
+        path: /etc/nginx/sites-available/default
+        state: absent
+    - name: "create file"
+      file:
+        path: /etc/nginx/sites-available/default
+        state: touch
+        mode: 0644
+    - name: "change default file"
+      blockinfile:
+        path: /etc/nginx/sites-available/default
+        block: |
+          server{
+            listen 80;
+            server_name _;
+            location / {
+            proxy_pass http://192.168.33.10:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade \$http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host \$host;
+            proxy_cache_bypass \$http_upgrade;
+            }
+          }
+      notify:
+        - Restart nginx
+    - name: update npm
+      command: npm install pm2 -g -y
 ```
+## Setting up Ansible-Vault and adding keys
+- SSH into the controller
+- Run the following commands
+```
+  sudo apt install python3-pip
+  sudo pip3 install awscli
+  sudo pip3 install boto boto3
+  sudo apt-get update -y
+  sudo apt-get upgrade -y
+```
+- Navigate to `cd /etc/ansible`
+- Create a group variables directory `mkdir group_vars`
+- cd into this directory and create a new directory `mkdir all`
+- Run the following command `sudo ansible-vault create pass.yml` and create a password. This puts you into an editor
+- Press `i` to insert text and add the corresponding keys
+```
+aws_access_key:
+aws_secret_key:
+```
+- Press `esc` and type `:wq!` to save and exit
+- `sudo cat pass.yml` this should return encrypted password
+
+## EC2 instance provision using Ansible
