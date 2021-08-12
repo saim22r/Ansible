@@ -216,6 +216,7 @@ build {
 }
 ```
 - Authenticate to AWS. Create environmental variables for access keys and secret keys.
+- Ansible Vault can't be used with packer
 ```
 export AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY
 export AWS_SECRET_ACCESS_KEY=YOUR_SECRET_KEY
