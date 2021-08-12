@@ -159,7 +159,6 @@ aws_secret_key:
 ## EC2 instance provision using Ansible
 ```
 ---
-
 - hosts: localhost
   connection: local
   gather_facts: True
@@ -174,7 +173,13 @@ aws_secret_key:
     ansible_python_interpreter: /usr/bin/python3
 ```
 ## Packer Task 
-- Install packer and set the PATH 
+- Install packer which can be downloaded and set the PATH (Windows -> System -> Advanced System Settings -> Environment Variables)
+- OR use the following commands
+```
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+sudo apt-get update && sudo apt-get install packer
+```
 - Create a new directory in the ansible directory `mkdir packer`
 - Navigate into the directory and create a file `sudo nano packer_task.pkr.hcl`
 - The code added into this file can be broken down into three sections
@@ -221,7 +226,7 @@ build {
 export AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY
 export AWS_SECRET_ACCESS_KEY=YOUR_SECRET_KEY
 ```
-- Run the following
+- Run the following commands
 ```
 packer init . # Initialize your Packer configuration
 packer fmt . # Format your template. Packer will print out the names of the files it modified
