@@ -157,3 +157,63 @@ aws_secret_key:
 - `sudo cat pass.yml` this should return encrypted password
 
 ## EC2 instance provision using Ansible
+```
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: True
+  become: True
+  vars:
+    key_name: eng89_devops
+    region: eu-west-1
+    image: 
+    id: "Ansible playbook to launch an aws ec2 instance"
+    sec_group: 
+    subnet_id: 
+    ansible_python_interpreter: /usr/bin/python3
+```
+## Packer Task 
+- Create a new directory in the ansible directory `mkdir packer`
+- Navigate into the directory and create a file `sudo nano packer_task.pkr.hcl`
+- The code added into this file can be broken down into three sections
+- **Packer Block**
+```
+packer {
+  required_plugins {
+    amazon = {
+      version = ">= 0.0.02"
+      source  = "github.com/hashicorp/amazon" # Only necessary when requiring a plugin outside the HashiCorp domain
+    }
+  }
+}
+```
+- **Source Block**
+```
+source "amazon-ebs" "ubuntu" {
+  ami_name      = "eng89_saim_playbook_app_AMI"
+  instance_type = "t2.micro"
+  region        = "eu-west-1"
+  source_ami_filter {
+    filters = {
+      name                = "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*"
+      root-device-type    = "ebs"
+      virtualization-type = "hvm"
+    }
+    most_recent = true
+    owners      = ["099720109477"]
+  }
+  ssh_username = "ubuntu"
+}
+```
+- **Build Block**
+```
+build {
+  sources = [
+    "source.amazon-ebs.ubuntu"
+  ]
+}
+```
+- Authenticate to AWS
+```
+```
