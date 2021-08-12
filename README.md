@@ -197,8 +197,8 @@ source "amazon-ebs" "ubuntu" {
   source_ami_filter {
     filters = {
       name                = "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*"
-      root-device-type    = "ebs"
-      virtualization-type = "hvm"
+      root-device-type    = "ebs" # Default
+      virtualization-type = "hvm" # Fully virtualized set of hardware and boot by executing the master boot record of the root block device of your image.
     }
     most_recent = true
     owners      = ["1"]
@@ -214,6 +214,15 @@ build {
   ]
 }
 ```
-- Authenticate to AWS
+- Authenticate to AWS. Create environmental variables for access keys and secret keys.
 ```
+export AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY
+export AWS_SECRET_ACCESS_KEY=YOUR_SECRET_KEY
+```
+- Run the following
+```
+packer init . # Initialize your Packer configuration
+packer fmt . # Format your template. Packer will print out the names of the files it modified
+packer validate . # Make sure your configuration is syntactically valid and internally consistent
+packer build filename 
 ```
