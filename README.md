@@ -204,7 +204,8 @@ source "amazon-ebs" "ubuntu" {
     filters = {
       name                = "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*"
       root-device-type    = "ebs" # Default
-      virtualization-type = "hvm" # Fully virtualized set of hardware and boot by executing the master boot record of the root block device of your image.
+      virtualization-type = "hvm" 
+# Fully virtualized set of hardware and boot by executing the master boot record of the root block device of your image.
     }
     most_recent = true
     owners      = ["1"]
