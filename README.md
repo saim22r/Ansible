@@ -174,6 +174,7 @@ aws_secret_key:
     ansible_python_interpreter: /usr/bin/python3
 ```
 ## Packer Task 
+- Install packer and set the PATH 
 - Create a new directory in the ansible directory `mkdir packer`
 - Navigate into the directory and create a file `sudo nano packer_task.pkr.hcl`
 - The code added into this file can be broken down into three sections
