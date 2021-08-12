@@ -183,7 +183,7 @@ packer {
   required_plugins {
     amazon = {
       version = ">= 0.0.02"
-      source  = "github.com/hashicorp/amazon" # Only necessary when requiring a plugin outside the HashiCorp domain
+      source  = "github.com/hashicorp/amazon" 
     }
   }
 }
